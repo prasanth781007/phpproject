@@ -1,1 +1,958 @@
-# phpproject
+<?php
+require_once 'includes/config.php';
+include 'includes/header.php';
+
+// Fetch approved reviews (latest 9)
+$reviews = [];
+try {
+    $res = $conn->query("SELECT * FROM reviews WHERE is_approved = 1 ORDER BY created_at DESC LIMIT 9");
+    if ($res)
+        $reviews = $res->fetch_all(MYSQLI_ASSOC);
+} catch (Exception $e) { /* table may not exist yet */
+}
+?>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <span class="hero-badge">✨ Handmade Excellence</span>
+        <h1>Turning Your <span class="text-gradient">Cherished Memories</span><br>Into Timeless Art</h1>
+        <p>Experience the magic of hand-drawn portraits. Whether it's charcoal, color pencil, or oil painting, we bring
+            your photos to life with breathtaking detail.</p>
+        <div class="hero-btns">
+            <a href="order.php" class="btn btn-primary btn-lg pulse-anim"><i class="fas fa-magic"></i> Order Your Portrait</a>
+            <a href="<?php echo base_url('gallery.php'); ?>" class="btn btn-outline btn-lg"><i class="fas fa-images"></i> View Gallery</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Portraits Delivered</p>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <h3>100%</h3>
+                <p>Handmade</p>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <h3>4.9/5</h3>
+                <p>Customer Rating</p>
+            </div>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="floating-card c1">
+            <img src="assets/images/colordrawing2.jpeg" alt="Color Portrait">
+        </div>
+        <div class="floating-card c2">
+            <img src="assets/images/pencildrawing.jpeg" alt="Pencil Sketch">
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="title">Why Choose <span class="text-highlight">MagicalArts?</span></h2>
+            <p class="subtitle">We don't just draw; we capture emotions and souls.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-box">
+                <div class="icon-wrapper">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h3>Master Artists</h3>
+                <p>Every stroke is placed with precision by our expert artists with years of experience.</p>
+            </div>
+            <div class="feature-box">
+                <div class="icon-wrapper">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3>Global Delivery</h3>
+                <p>Safe, secure, and fast shipping to your doorstep, anywhere in the world.</p>
+            </div>
+            <div class="feature-box">
+                <div class="icon-wrapper">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>100% Satisfaction</h3>
+                <p>We work until you are happy. Unlimited revisions during the preview stage.</p>
+            </div>
+            <div class="feature-box">
+                <div class="icon-wrapper">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Secure Payment</h3>
+                <p>Your transactions are protected with industry-standard encryption.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section id="gallery" class="gallery-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="title">Our <span class="text-gradient">Masterpieces</span></h2>
+            <p class="subtitle">A glimpse into our recent commissions</p>
+        </div>
+
+        <div class="gallery-masonry">
+            <!-- 1 -->
+            <div class="gallery-card large" onclick="openHomeGalleryModal(0)">
+                <img src="assets/images/colordrawing.jpeg" alt="Color Drawing">
+                <div class="overlay">
+                    <div class="text">
+                        <h3>Color Portrait</h3>
+                        <p>Vibrant Colored Pencils</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 2 -->
+            <div class="gallery-card" onclick="openHomeGalleryModal(1)">
+                <img src="assets/images/colordrawing2.jpeg" alt="Color Drawing 2">
+                <div class="overlay">
+                    <div class="text">
+                        <h3>Color Sketch</h3>
+                        <p>Hand-Drawn Masterpiece</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 3 -->
+            <div class="gallery-card" onclick="openHomeGalleryModal(2)">
+                <img src="assets/images/pencildrawing.jpeg" alt="Pencil Drawing">
+                <div class="overlay">
+                    <div class="text">
+                        <h3>Pencil Sketch</h3>
+                        <p>Graphite on Paper</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 4 -->
+            <div class="gallery-card small" onclick="openHomeGalleryModal(3)">
+                <img src="assets/images/IMG-20251126-WA0031.jpg" alt="Portrait">
+                <div class="overlay">
+                    <div class="text">
+                        <h3>Portrait</h3>
+                        <p>Timeless Memory</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 5 -->
+            <div class="gallery-card small" onclick="openHomeGalleryModal(4)">
+                <img src="assets/images/IMG-20251126-WA0039.jpg" alt="Portrait Art">
+                <div class="overlay">
+                    <div class="text">
+                        <h3>Portrait Art</h3>
+                        <p>Handcrafted with Love</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <a href="<?php echo base_url('gallery.php'); ?>" class="btn btn-outline">View Full Gallery <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Homepage Gallery Modal -->
+<div class="modal" id="homeGalleryModal" onclick="closeHomeGalleryModal()">
+    <span class="close-modal" onclick="closeHomeGalleryModal(event)">&times;</span>
+    <div class="nav-modal prev" onclick="navigateHomeGallery(-1, event)">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="nav-modal next" onclick="navigateHomeGallery(1, event)">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <img id="homeModalImage" src="" alt="Gallery Image">
+        <video id="homeModalVideo" controls style="display: none; max-width: 100%; max-height: 80vh; border-radius: 10px;"></video>
+        <div class="modal-controls">
+             <button id="modalPauseBtn" class="media-btn" style="display: none;" onclick="toggleModalMedia()"><i class="fas fa-pause"></i></button>
+        </div>
+        <div class="modal-caption" id="homeModalCaption"></div>
+    </div>
+</div>
+
+<style>
+    /* Modal Styles mirroring gallery.php */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        backdrop-filter: blur(10px);
+    }
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
+    }
+
+    .modal-content img {
+        max-width: 100%;
+        max-height: 80vh;
+        border-radius: 10px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-caption {
+        color: white;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.1rem;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        color: white;
+        font-size: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 2001;
+    }
+
+    .close-modal:hover {
+        color: #667eea;
+        transform: rotate(90deg);
+    }
+
+    .nav-modal {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 40px;
+        cursor: pointer;
+        padding: 20px;
+        transition: all 0.3s ease;
+        z-index: 2001;
+    }
+
+    .nav-modal.prev {
+        left: 30px;
+    }
+
+    .nav-modal.next {
+        right: 30px;
+    }
+
+    .nav-modal:hover {
+        color: #667eea;
+        transform: translateY(-50%) scale(1.2);
+    }
+
+    .gallery-card {
+        cursor: pointer;
+    }
+
+    /* Restricted Gallery Styles */
+    .blurred-img {
+        filter: blur(15px);
+        transform: scale(1.1);
+        transition: filter 0.5s ease;
+    }
+
+    .locked-overlay {
+        background: rgba(15, 23, 42, 0.4) !important;
+        opacity: 1 !important;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(2px);
+    }
+
+    .locked-overlay .text i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        animation: pulse-lock 2s infinite;
+    }
+
+    @keyframes pulse-lock {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    .restricted-gallery .gallery-card:hover .blurred-img {
+        filter: blur(20px);
+    }
+
+    .restricted-gallery .gallery-card:hover .locked-overlay {
+        background: rgba(15, 23, 42, 0.6) !important;
+    }
+</style>
+
+<script>
+    const homeGalleryImages = [
+        { path: 'assets/images/colordrawing.jpeg', title: 'Color Portrait', desc: 'Vibrant Colored Pencils' },
+        { path: 'assets/images/colordrawing2.jpeg', title: 'Color Sketch', desc: 'Hand-Drawn Masterpiece' },
+        { path: 'assets/images/pencildrawing.jpeg', title: 'Pencil Sketch', desc: 'Graphite on Paper' },
+        { path: 'assets/images/IMG-20251126-WA0031.jpg', title: 'Portrait', desc: 'Timeless Memory' },
+        { path: 'assets/images/IMG-20251126-WA0039.jpg', title: 'Portrait Art', desc: 'Handcrafted with Love' }
+    ];
+    let currentHomeGalleryIndex = 0;
+
+    function openHomeGalleryModal(index) {
+        currentHomeGalleryIndex = index;
+        const modal = document.getElementById('homeGalleryModal');
+        const modalImg = document.getElementById('homeModalImage');
+        const modalVid = document.getElementById('homeModalVideo');
+        const modalCaption = document.getElementById('homeModalCaption');
+        const pauseBtn = document.getElementById('modalPauseBtn');
+        const media = homeGalleryImages[index];
+
+        if (media.path.endsWith('.mp4') || media.type === 'video') {
+            modalImg.style.display = 'none';
+            modalVid.src = media.path;
+            modalVid.style.display = 'block';
+            modalVid.play();
+            pauseBtn.style.display = 'block';
+        } else {
+            modalVid.style.display = 'none';
+            modalVid.pause();
+            modalImg.src = media.path;
+            modalImg.style.display = 'block';
+            pauseBtn.style.display = 'none';
+        }
+
+        modalCaption.innerHTML = `<strong>${media.title}</strong> - ${media.desc}`;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function toggleModalMedia() {
+        const vid = document.getElementById('homeModalVideo');
+        const btn = document.getElementById('modalPauseBtn');
+        const icon = btn.querySelector('i');
+        if (vid.paused) {
+            vid.play();
+            icon.className = 'fas fa-pause';
+        } else {
+            vid.pause();
+            icon.className = 'fas fa-play';
+        }
+    }
+
+    function closeHomeGalleryModal(event) {
+        if (event && event.target !== document.getElementById('homeGalleryModal') && !event.target.classList.contains('close-modal')) return;
+        
+        const vid = document.getElementById('homeModalVideo');
+        vid.pause();
+        vid.src = "";
+        
+        document.getElementById('homeGalleryModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    function navigateHomeGallery(direction, event) {
+        if (event) event.stopPropagation();
+        currentHomeGalleryIndex += direction;
+
+        if (currentHomeGalleryIndex < 0) currentHomeGalleryIndex = homeGalleryImages.length - 1;
+        if (currentHomeGalleryIndex >= homeGalleryImages.length) currentHomeGalleryIndex = 0;
+
+        openHomeGalleryModal(currentHomeGalleryIndex);
+    }
+
+    document.addEventListener('keydown', function (e) {
+        const modal = document.getElementById('homeGalleryModal');
+        if (modal.classList.contains('active')) {
+            if (e.key === 'Escape') closeHomeGalleryModal();
+            else if (e.key === 'ArrowLeft') navigateHomeGallery(-1);
+            else if (e.key === 'ArrowRight') navigateHomeGallery(1);
+        }
+    });
+</script>
+
+<!-- Process Section -->
+<section class="process-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="title">How It <span class="text-highlight">Works</span></h2>
+        </div>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <h3>Upload Photo</h3>
+                    <p>Choose your best photo and select your preferred size and style.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <h3>We Create Art</h3>
+                    <p>Our artists hand-draw your portrait with extreme attention to detail.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <h3>Review & Ship</h3>
+                    <p>You review the digital scan. Once approved, we ship it to you!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Order Section -->
+<section id="order" class="order-section" style="padding: 5rem 0; background-color: #fafafa;">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="hero-badge">✨ Order Now</span>
+            <h2 class="title">Order Your <span class="text-highlight">Magical Portrait</span></h2>
+            <p class="subtitle">Fill in the details below and we'll create your masterpiece</p>
+        </div>
+
+        <div class="order-container"
+            style="max-width: 800px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <form action="scripts/process_order.php" method="POST" enctype="multipart/form-data" class="order-form"
+                id="orderForm">
+                <div class="form-group">
+                    <label for="name"><i class="fas fa-user"></i> Your Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="image"><i class="fas fa-image"></i> Upload Reference Image *</label>
+                    <div class="file-upload">
+                        <input type="file" id="image" name="image" accept="image/*" required>
+                        <div class="file-upload-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose an image</span>
+                        </div>
+                    </div>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="delivery_date"><i class="fas fa-calendar"></i> Delivery Date *</label>
+                        <input type="date" id="delivery_date" name="delivery_date" required
+                            min="<?php echo date('Y-m-d', strtotime('+7 days')); ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="size"><i class="fas fa-ruler"></i> Drawing Size *</label>
+                        <select id="size" name="size" required>
+                            <option value="">Select size</option>
+                            <option value="8x10">8 x 10 inches</option>
+                            <option value="11x14">11 x 14 inches</option>
+                            <option value="12x16">12 x 16 inches</option>
+                            <option value="16x20">16 x 20 inches</option>
+                            <option value="18x24">18 x 24 inches</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-palette"></i> Color Type *</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="color_type" value="color" checked>
+                            <span class="radio-custom"></span>
+                            Full Color
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="color_type" value="black_white">
+                            <span class="radio-custom"></span>
+                            Black & White
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="special_instructions"><i class="fas fa-pencil-alt"></i> Special Instructions
+                        (Optional)</label>
+                    <textarea id="special_instructions" name="special_instructions" rows="4"
+                        placeholder="Any specific details you'd like us to include?"></textarea>
+                </div>
+
+                <div class="form-group terms">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="terms" required>
+                        <span class="checkbox-custom"></span>
+                        I agree to the <a href="#">terms and conditions</a> *
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit">Place Order <i class="fas fa-arrow-right"></i></button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('image').addEventListener('change', function () {
+        const file = this.files[0];
+        const preview = document.getElementById('imagePreview');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.innerHTML = '<img src="' + e.target.result + '" style="max-width:200px; max-height:200px; border-radius:8px; margin-top:10px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" alt="Selected Image"/>';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '';
+        }
+    });
+</script>
+
+<!-- ===================== REVIEWS SECTION ===================== -->
+<section id="reviews" class="reviews-section">
+    <div class="container">
+
+        <!-- Section Header -->
+        <div class="section-header text-center">
+            <span class="hero-badge">⭐ Customer Love</span>
+            <h2 class="title">What Our <span class="text-gradient">Clients Say</span></h2>
+            <p class="subtitle">Real experiences from people whose memories we've immortalised.</p>
+        </div>
+
+        <?php displayFlashMessage(); ?>
+
+        <!-- Review Slider -->
+        <?php if (!empty($reviews)): ?>
+            <div class="reviews-slider-wrapper">
+                <!-- Prev Button -->
+                <button class="slider-nav-btn slider-prev" id="sliderPrev" aria-label="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div class="reviews-slider-viewport" id="reviewsViewport">
+                    <div class="reviews-slider-track" id="reviewsTrack">
+                        <?php foreach ($reviews as $r):
+                            $stars = (int) $r['rating'];
+                            $initials = strtoupper(substr($r['name'], 0, 2));
+                            $date = date('M j, Y', strtotime($r['created_at']));
+                            $words = preg_split('/\s+/', trim(strip_tags($r['comment'])));
+                            $isLong = count($words) > 10;
+                            $shortText = $isLong
+                                ? htmlspecialchars(implode(' ', array_slice($words, 0, 10))) . '…'
+                                : htmlspecialchars($r['comment']);
+                            $cardId = 'rv-' . $r['id'];
+                            ?>
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="reviewer-avatar">
+                                        <?php if (!empty($r['photo']) && file_exists($r['photo'])): ?>
+                                            <img src="<?= htmlspecialchars($r['photo']) ?>"
+                                                alt="<?= htmlspecialchars($r['name']) ?>">
+                                        <?php else: ?>
+                                            <span class="avatar-initials"><?= $initials ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="reviewer-info">
+                                        <strong><?= htmlspecialchars($r['name']) ?></strong>
+                                        <span class="review-date"><?= $date ?></span>
+                                    </div>
+                                </div>
+                                <div class="review-stars">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fas fa-star <?= $i <= $stars ? 'filled' : 'empty' ?>"></i>
+                                    <?php endfor; ?>
+                                </div>
+                                <p class="review-comment"><?= nl2br($shortText) ?></p>
+                                <?php if ($isLong): ?>
+                                    <button class="read-more-btn" onclick="openReviewModal('<?= $cardId ?>')"
+                                        aria-label="Read full review">
+                                        <i class="fas fa-expand-alt"></i> Read More
+                                    </button>
+                                    <!-- hidden data used by modal -->
+                                    <span id="<?= $cardId ?>" hidden data-name="<?= htmlspecialchars($r['name']) ?>"
+                                        data-date="<?= $date ?>" data-stars="<?= $stars ?>" data-initials="<?= $initials ?>"
+                                        data-photo="<?= (!empty($r['photo']) && file_exists($r['photo'])) ? htmlspecialchars($r['photo']) : '' ?>"
+                                        data-comment="<?= htmlspecialchars($r['comment']) ?>">
+                                    </span>
+                                <?php endif; ?>
+                                <div class="review-quote-icon"><i class="fas fa-quote-right"></i></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Next Button -->
+                <button class="slider-nav-btn slider-next" id="sliderNext" aria-label="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Dot Indicators -->
+            <div class="reviews-dots" id="reviewsDots"></div>
+        <?php else: ?>
+            <p class="no-reviews-msg">Be the first to share your experience! ✨</p>
+        <?php endif; ?>
+
+        <!-- ---- Toggle Button ---- -->
+        <div class="write-review-toggle text-center">
+            <button id="toggleReviewFormBtn" class="btn btn-primary btn-lg write-review-btn"
+                onclick="toggleReviewForm()">
+                <i class="fas fa-pen-nib" id="toggleBtnIcon"></i>
+                <span id="toggleBtnText">Write a Review</span>
+            </button>
+        </div>
+
+        <!-- ---- Submit a Review Form (hidden by default) ---- -->
+        <div class="review-form-wrapper" id="reviewFormWrapper" style="display:none; overflow:hidden;">
+            <div class="review-form-card">
+                <div class="review-form-topbar">
+                    <h3><i class="fas fa-pen-nib"></i> Share Your Experience</h3>
+                    <button type="button" class="close-form-btn" onclick="toggleReviewForm()" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form action="scripts/submit_review.php" method="POST" enctype="multipart/form-data" class="review-form"
+                    id="reviewForm">
+
+                    <div class="form-row">
+                        <!-- Name -->
+                        <div class="form-group">
+                            <label for="reviewer_name"><i class="fas fa-user"></i> Your Name <span
+                                    class="req">*</span></label>
+                            <input type="text" id="reviewer_name" name="reviewer_name" placeholder="e.g. Priya Sharma"
+                                required maxlength="100">
+                        </div>
+
+                        <!-- Photo Upload -->
+                        <div class="form-group">
+                            <label for="reviewer_photo"><i class="fas fa-camera"></i> Your Photo <span
+                                    class="optional">(optional)</span></label>
+                            <div class="file-upload-box" id="fileUploadBox">
+                                <input type="file" id="reviewer_photo" name="reviewer_photo" accept="image/*" hidden>
+                                <div class="file-upload-inner"
+                                    onclick="document.getElementById('reviewer_photo').click()">
+                                    <div id="photoPreview" class="photo-preview-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Click to upload photo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Star Rating -->
+                    <div class="form-group">
+                        <label><i class="fas fa-star"></i> Your Rating <span class="req">*</span></label>
+                        <div class="star-rating-input" id="starRating">
+                            <input type="hidden" name="rating" id="ratingValue" value="5">
+                            <?php for ($i = 5; $i >= 1; $i--): ?>
+                                <span class="star-btn <?= $i <= 5 ? 'active' : '' ?>" data-val="<?= $i ?>">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+
+                    <!-- Comment -->
+                    <div class="form-group">
+                        <label for="comment"><i class="fas fa-comment-dots"></i> Your Review <span
+                                class="req">*</span></label>
+                        <textarea id="comment" name="comment" rows="4" placeholder="Tell us about your experience…"
+                            required maxlength="1000"></textarea>
+                        <span class="char-count"><span id="charCount">0</span>/1000</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg submit-review-btn">
+                        <i class="fas fa-paper-plane"></i> Post Review
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+    <!-- ============ REVIEW DETAIL MODAL ============ -->
+    <div id="reviewModal" class="review-modal-overlay" onclick="closeReviewModal(event)" role="dialog" aria-modal="true"
+        aria-label="Full Review">
+        <div class="review-modal-card">
+            <div class="review-modal-topbar">
+                <button class="review-modal-close" onclick="closeReviewModal()" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="review-modal-body">
+                <div class="review-modal-header">
+                    <div class="reviewer-avatar" id="modalAvatar"></div>
+                    <div class="reviewer-info">
+                        <strong id="modalName"></strong>
+                        <span class="review-date" id="modalDate"></span>
+                    </div>
+                </div>
+                <div class="review-stars" id="modalStars"></div>
+                <p class="review-modal-comment" id="modalComment"></p>
+
+                <!-- Full uploaded photo view -->
+                <div id="modalImageContainer" style="display: none; margin-top: 1.5rem; text-align: center;">
+                    <img id="modalFullImage" src="" alt="Review Photo"
+                        style="max-width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                </div>
+
+                <div class="review-quote-icon" style="position:static;font-size:2.5rem;opacity:0.08;text-align:right;">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- Reviews JS -->
+<script>
+    // ---- Review Modal ----
+    function openReviewModal(id) {
+        const src = document.getElementById(id);
+        if (!src) return;
+        const d = src.dataset;
+        // Avatar
+        const avatarEl = document.getElementById('modalAvatar');
+        if (d.photo) {
+            avatarEl.innerHTML = `<img src="${d.photo}" alt="${d.name}">`;
+        } else {
+            avatarEl.innerHTML = `<span class="avatar-initials">${d.initials}</span>`;
+        }
+        // Name & Date
+        document.getElementById('modalName').textContent = d.name;
+        document.getElementById('modalDate').textContent = d.date;
+        // Stars
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += `<i class="fas fa-star ${i <= parseInt(d.stars) ? 'filled' : 'empty'}"></i>`;
+        }
+        document.getElementById('modalStars').innerHTML = starsHtml;
+        // Comment (preserve line breaks)
+        document.getElementById('modalComment').innerHTML = d.comment.replace(/\n/g, '<br>');
+
+        // Full Image
+        const imgContainer = document.getElementById('modalImageContainer');
+        const imgFull = document.getElementById('modalFullImage');
+        if (d.photo) {
+            imgFull.src = d.photo;
+            imgContainer.style.display = 'block';
+        } else {
+            imgContainer.style.display = 'none';
+            imgFull.src = '';
+        }
+
+        // Show
+        const modal = document.getElementById('reviewModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReviewModal(e) {
+        // If called via overlay click, only close if user clicked the overlay itself
+        if (e && e.target !== document.getElementById('reviewModal')) return;
+        const modal = document.getElementById('reviewModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close on keyboard Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeReviewModal();
+    });
+
+    // --- Toggle review form open/close ---
+    function toggleReviewForm() {
+        const wrapper = document.getElementById('reviewFormWrapper');
+        const btnText = document.getElementById('toggleBtnText');
+        const btnIcon = document.getElementById('toggleBtnIcon');
+        const isHidden = wrapper.style.display === 'none' || wrapper.style.display === '';
+
+        if (isHidden) {
+            wrapper.style.display = 'block';
+            wrapper.style.opacity = '0';
+            wrapper.style.transform = 'translateY(-16px)';
+            wrapper.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+            void wrapper.offsetHeight;
+            wrapper.style.opacity = '1';
+            wrapper.style.transform = 'translateY(0)';
+            btnText.textContent = 'Cancel';
+            btnIcon.className = 'fas fa-times';
+            setTimeout(() => wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+        } else {
+            wrapper.style.opacity = '0';
+            wrapper.style.transform = 'translateY(-16px)';
+            setTimeout(() => { wrapper.style.display = 'none'; }, 350);
+            btnText.textContent = 'Write a Review';
+            btnIcon.className = 'fas fa-pen-nib';
+        }
+    }
+
+    (function () {
+        // --- Star rating picker ---
+        const stars = document.querySelectorAll('#starRating .star-btn');
+        const hidden = document.getElementById('ratingValue');
+
+        function setRating(val) {
+            hidden.value = val;
+            stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.val) <= val));
+        }
+
+        stars.forEach(s => {
+            s.addEventListener('click', () => setRating(parseInt(s.dataset.val)));
+            s.addEventListener('mouseenter', () => {
+                stars.forEach(x => x.classList.toggle('hover', parseInt(x.dataset.val) <= parseInt(s.dataset.val)));
+            });
+        });
+        document.getElementById('starRating').addEventListener('mouseleave', () => {
+            stars.forEach(x => x.classList.remove('hover'));
+        });
+        setRating(5);
+
+        // --- Photo preview ---
+        document.getElementById('reviewer_photo').addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('photoPreview').innerHTML =
+                    `<img src="${e.target.result}" alt="Preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // --- Char count ---
+        const ta = document.getElementById('comment');
+        const cc = document.getElementById('charCount');
+        if (ta && cc) ta.addEventListener('input', () => { cc.textContent = ta.value.length; });
+    })();
+
+    // ============================================================
+    // REVIEWS AUTO-SLIDER
+    // ============================================================
+    (function () {
+        const track = document.getElementById('reviewsTrack');
+        const viewport = document.getElementById('reviewsViewport');
+        const prevBtn = document.getElementById('sliderPrev');
+        const nextBtn = document.getElementById('sliderNext');
+        const dotsWrap = document.getElementById('reviewsDots');
+
+        if (!track) return; // no reviews on page
+
+        const cards = Array.from(track.children);
+        const totalCards = cards.length;
+        let currentIndex = 0;
+        let autoTimer = null;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragDelta = 0;
+
+        // How many cards are visible — reads CSS variable set by media query
+        function visibleCount() {
+            const vw = window.innerWidth;
+            if (vw >= 1200) return 4;
+            if (vw >= 900) return 3;
+            if (vw >= 600) return 2;
+            return 1;
+        }
+
+        function maxIndex() {
+            return Math.max(0, totalCards - visibleCount());
+        }
+
+        // Build dots
+        function buildDots() {
+            dotsWrap.innerHTML = '';
+            const count = maxIndex() + 1;
+            for (let i = 0; i < count; i++) {
+                const d = document.createElement('button');
+                d.className = 'review-dot' + (i === currentIndex ? ' active' : '');
+                d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                d.addEventListener('click', () => { goTo(i); resetTimer(); });
+                dotsWrap.appendChild(d);
+            }
+        }
+
+        function updateDots() {
+            const dots = dotsWrap.querySelectorAll('.review-dot');
+            dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+        }
+
+        function goTo(index) {
+            currentIndex = Math.max(0, Math.min(index, maxIndex()));
+            const cardWidth = track.querySelector('.review-card').offsetWidth;
+            const gap = parseInt(getComputedStyle(track).gap) || 28;
+            const offset = currentIndex * (cardWidth + gap);
+            track.style.transform = `translateX(-${offset}px)`;
+            updateDots();
+            // Update button states
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex >= maxIndex();
+        }
+
+        function next() { goTo(currentIndex >= maxIndex() ? 0 : currentIndex + 1); }
+        function prev() { goTo(currentIndex <= 0 ? maxIndex() : currentIndex - 1); }
+
+        function startTimer() {
+            autoTimer = setInterval(next, 3500);
+        }
+
+        function resetTimer() {
+            clearInterval(autoTimer);
+            startTimer();
+        }
+
+        // Nav buttons
+        prevBtn.addEventListener('click', () => { prev(); resetTimer(); });
+        nextBtn.addEventListener('click', () => { next(); resetTimer(); });
+
+        // Touch / drag support
+        viewport.addEventListener('touchstart', e => {
+            isDragging = true;
+            dragStartX = e.touches[0].clientX;
+            dragDelta = 0;
+            clearInterval(autoTimer);
+        }, { passive: true });
+
+        viewport.addEventListener('touchmove', e => {
+            if (!isDragging) return;
+            dragDelta = e.touches[0].clientX - dragStartX;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', () => {
+            if (Math.abs(dragDelta) > 50) {
+                dragDelta < 0 ? next() : prev();
+            }
+            isDragging = false;
+            startTimer();
+        });
+
+        // Pause on hover
+        viewport.addEventListener('mouseenter', () => clearInterval(autoTimer));
+        viewport.addEventListener('mouseleave', startTimer);
+
+        // Recalculate on resize
+        window.addEventListener('resize', () => { buildDots(); goTo(Math.min(currentIndex, maxIndex())); });
+
+        // Init
+        buildDots();
+        goTo(0);
+        startTimer();
+    })();
+</script>
+
+<?php include 'includes/footer.php'; ?>
+
